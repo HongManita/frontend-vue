@@ -50,7 +50,7 @@ export default {
   }),
   methods: {
     goToLogin () {
-      this.$router.push({path:'/login'})
+      this.$router.push('/login')
     }
   }
 }

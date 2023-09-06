@@ -1,9 +1,11 @@
 <template>
+  <v-container>
   <v-row justify="center">
     <v-col cols="12" align="center">
       <LoginForm />
     </v-col>
   </v-row>
+</v-container>
 </template>
 
 <script>
