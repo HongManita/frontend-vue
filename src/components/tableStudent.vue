@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <v-data-table
       :headers="headers"
       :items="employeeItem"
@@ -9,11 +8,10 @@
     >
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>จัดการข้อมูล</v-toolbar-title>
+          <v-toolbar-title>จัดการข้อมูลนักศึกษา</v-toolbar-title>
 
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
-
 
           <v-btn
             color="primary"
@@ -21,21 +19,18 @@
             class="mb-2"
             @click="openDialog('add', defaultItem)"
           >
-            เพิ่มข้อมูล
+            เพิ่มข้อมูลนักศึกษา
           </v-btn>
-
         </v-toolbar>
       </template>
 
-      <template v-slot:[`item.role`]="{ item }">
-        {{ item.role.name }}
-      </template>
+   
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="openDialog('edit', item)">
           mdi-pencil
         </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
-      </template> 
+      </template>
       <template v-slot:no-data>
         <v-btn color="primary" @click="initialize"> Reset </v-btn>
       </template>
@@ -56,10 +51,10 @@
                 <v-text-field v-model="lastname" label="นามสกุล"></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="sarary" label="เงินเดือน"></v-text-field>
+                <v-text-field v-model="email" label="อีเมลล์"></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="4">
-                <v-text-field v-model="roles" label="ตำแหน่ง"></v-text-field>
+                <v-text-field v-model="studentnumber" label="รหัสนักศึกษา"></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -77,7 +72,6 @@
       </v-card>
     </v-dialog>
 
-
     <v-dialog v-model="dialogDelete" max-width="500px">
       <v-card>
         <v-card-title class="text-h5"
@@ -93,20 +87,17 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-
-
   </div>
 </template>
 
 <script>
 export default {
   data: () => ({
-    firstname : '',
-    lastname : '',
-    sarary: '',
-    roles : '',
-    idEmpployee:"",
+    firstname: "",
+    lastname: "",
+    email: "",
+    studentnumber: '',
+    idStudent: "",
 
     dialog: false,
     dialogDelete: false,
@@ -119,8 +110,8 @@ export default {
       },
       { text: "ชื่อ", value: "firstName" },
       { text: "นามสกุล", value: "lastName" },
-      { text: "เงินเดือน", value: "sarary" },
-      { text: "ตำแหน่ง", value: "role" },
+      { text: "อีเมลล์", value: "email" },
+      { text: "รหัสนักศึกษา", value: "studentNumber" },
       { text: "Actions", value: "actions", sortable: false },
     ],
 
@@ -141,8 +132,8 @@ export default {
       protein: 0,
     },
     formTitle: "",
-    
-    idFordelete: ""
+
+    idFordelete: "",
   }),
 
   watch: {
@@ -160,42 +151,38 @@ export default {
 
   methods: {
     async initialize() {
-     this.employeeItem = []
-     try{
-      var data = await this.axios.get('http://localhost:9000/employee')
-      console.log('data employee ====>', data)
-      this.employeeItem = data.data
-     }catch(error){
-
-     }
+      this.employeeItem = [];
+      try {
+        var data = await this.axios.get("http://localhost:9000/students");
+        console.log("data student ====>", data);
+        this.employeeItem = data.data;
+      } catch (error) {}
     },
 
     openDialog(Action, item) {
       // console.log(Action,item);
       this.formTitle = "";
       if (Action === "add") {
-        this.dialog = true
-        this.formTitle = "เพิ่มข้อมูล"
-        this.editItem = item
-      } else {
-        console.log(Action,item);
         this.dialog = true;
-        this.formTitle = 'แก้ไขข้อมูล'
+        this.formTitle = "เพิ่มข้อมูล";
+        this.editItem = item;
+      } else {
+        console.log(Action, item);
+        this.dialog = true;
+        this.formTitle = "แก้ไขข้อมูล";
         // this.editedIndex = this.desserts.indexOf(item);
         // this.editedItem = item;
-        this.firstname = item.firstName
-        this.lastname = item.lastName
-        this.sarary = item.sarary
-        this.roles = item.role.name
-        this.idEmpployee = item.id
-
-
-
+        this.firstname = item.firstName;
+        this.lastname = item.lastName;
+        this.email = item.email;
+        this.studentnumber = item.studentNumber
+;
+        this.idStudent = item.id;
       }
     },
     editItem(item) {
-    //   console.log("item select", item);
-    //   console.log("item item", this.desserts.indexOf(item));
+      //   console.log("item select", item);
+      //   console.log("item item", this.desserts.indexOf(item));
 
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -203,76 +190,73 @@ export default {
     },
 
     deleteItem(item) {
-      this.idFordelete = item.id
-      this.dialogDelete = true
+      this.idFordelete = item.id;
+      this.dialogDelete = true;
     },
 
     async deleteItemConfirm() {
-      try{
-        var response = await this.axios.delete('http://localhost:9000/employee/' + this.idFordelete)
-        this.initialize()
-      }catch(error){
-        console.log(error.massage)
+      try {
+        var response = await this.axios.delete(
+          "http://localhost:9000/students/" + this.idFordelete
+        );
+        this.initialize();
+      } catch (error) {
+        console.log(error.massage);
       }
-      this.closeDelete()
+      this.closeDelete();
     },
-
-
 
     closeDelete() {
-      this.dialogDelete = false
-      this.editedItem = []
-      this.editedIndex= -1
+      this.dialogDelete = false;
+      this.editedItem = [];
+      this.editedIndex = -1;
     },
     close() {
-     this.dialog = false
-     this.firstname = '',
-     this.lastname= '',
-     this.sarary='',
-     this.roles=''
+      this.dialog = false;
+      (this.firstname = ""),
+        (this.lastname = ""),
+        (this.email = ""),
+        (this.studentnumber = "");
     },
     async save(action) {
       var data = {
-
-        firstName :this.firstname,
-        lastName : this.lastname,
-        sarary : this.sarary,
-        role: {
-          name : this.roles
-        },
-        skills:[
-          {
-            skill:'',
-          },
-        ],
-
-      }
+        firstName: this.firstname,
+        lastName: this.lastname,
+        email: this.email,
+        studentNumber:this.studentnumber
+        
+      };
       if (action === "เพิ่มข้อมูล") {
         // this.desserts.push(this.editedItem);
         // this.dialog = false;
         // this.close();
-        console.log('data after send ====>',data)
-        try{
-          var dataResponse = await this.axios.post('http://localhost:9000/employee',data)
-          console.log('dataReponse ===>', dataResponse)
-          this.close()
-          this.initialize()
-        }catch(error){
-            console.log(error.massage)
+        console.log("data after send ====>", data);
+        try {
+          var dataResponse = await this.axios.post(
+            "http://localhost:9000/students",
+            data
+          );
+          console.log("dataReponse ===>", dataResponse);
+          this.close();
+          this.initialize();
+        } catch (error) {
+          console.log(error.massage);
         }
-      } else{
-        try{
-          var dataReponseEdit = await this.axios.put('http://localhost:9000/employee/' + this.idEmpployee, data)
-          console.log('dataReponseEdit ===>', dataReponseEdit)
-          this.close()
-          this.initialize()
-        }catch(error){
-          console.log(error.massage)
-
+      } else {
+        try {
+          var dataReponseEdit = await this.axios.put(
+            "http://localhost:9000/students/" + this.idStudent,
+            data
+          );
+          console.log("dataReponseEdit ===>", dataReponseEdit);
+          this.close();
+          this.initialize();
+        } catch (error) {
+          console.log(error.massage);
         }
-        Object.assign(this.desserts[this.editedIndex], this.editItem)
+        Object.assign(this.desserts[this.editedIndex], this.editItem);
       }
-      this.close()
+      this.close();
     },
   },
 };

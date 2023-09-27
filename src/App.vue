@@ -26,6 +26,11 @@
       </div>
 
       <v-spacer></v-spacer>
+      <v-btn
+      text
+      @click="gotoManageStudent()">
+       จัดการข้อมูลนักเรียน 
+      </v-btn>
 
       <v-btn
       text
@@ -34,10 +39,10 @@
       </v-btn>
 
 
-      <v-btn
+     <v-btn
       text
       @click="goToLogin()">
-       เข้าสู่ระบบ
+       เข้าสู่ระบบ 
       </v-btn>
     </v-app-bar>
 
@@ -61,7 +66,12 @@ export default {
     },
     gotoManage () {
       this.$router.push({path:'/managetable'}).catch(() => {})
+    },
+    gotoManageStudent () {
+      this.$router.push({path:'/managetablestudent'}).catch(() => {})
     }
+
+
   }
 }
 </script>
